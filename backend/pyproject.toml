@@ -1,0 +1,14 @@
+[project]
+name = "orgalego-backend"
+version = "0.1.0"
+description = "Backend de OrgaLego - simulateur 2D de structures organisationnelles"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+asyncio_mode = "auto"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"

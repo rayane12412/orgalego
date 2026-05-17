@@ -1,0 +1,30 @@
+{
+  "id": "macro_divisionnelle",
+  "name": "Structure divisionnelle",
+  "level": "macro",
+  "school": "Mintzberg",
+  "description": "Découpage par produits, marchés ou zones géographiques. Chaque division dispose de ses propres fonctions support. Autonomie élevée, redondance des coûts.",
+  "nodes": [
+    {"id": "dg", "label": "Direction Générale", "type": "division", "capacity": 1.0},
+    {"id": "div_a", "label": "Division A", "type": "division", "capacity": 1.0},
+    {"id": "div_b", "label": "Division B", "type": "division", "capacity": 1.0},
+    {"id": "div_c", "label": "Division C", "type": "division", "capacity": 1.0},
+    {"id": "corp", "label": "Corporate Functions", "type": "division", "capacity": 1.0}
+  ],
+  "edges": [
+    {"source": "dg", "target": "div_a", "type": "hierarchy", "weight": 1.0},
+    {"source": "dg", "target": "div_b", "type": "hierarchy", "weight": 1.0},
+    {"source": "dg", "target": "div_c", "type": "hierarchy", "weight": 1.0},
+    {"source": "dg", "target": "corp", "type": "hierarchy", "weight": 1.0},
+    {"source": "corp", "target": "div_a", "type": "functional", "weight": 0.5},
+    {"source": "corp", "target": "div_b", "type": "functional", "weight": 0.5},
+    {"source": "corp", "target": "div_c", "type": "functional", "weight": 0.5}
+  ],
+  "signature": {
+    "depth": 2.0,
+    "span": 4.0,
+    "density": 0.4,
+    "modularity": 0.5,
+    "supervisor_ratio": 0.2
+  }
+}

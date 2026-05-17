@@ -1,0 +1,32 @@
+{
+  "id": "macro_adhocratie",
+  "name": "Adhocratie",
+  "level": "macro",
+  "school": "Mintzberg",
+  "description": "Organisation organique, faiblement formalisée, fondée sur des équipes pluridisciplinaires temporaires. Forte capacité d'innovation, faible standardisation.",
+  "nodes": [
+    {"id": "dg", "label": "Direction", "type": "division", "capacity": 1.0},
+    {"id": "team1", "label": "Squad Innovation 1", "type": "division", "capacity": 1.0},
+    {"id": "team2", "label": "Squad Innovation 2", "type": "division", "capacity": 1.0},
+    {"id": "team3", "label": "Squad Innovation 3", "type": "division", "capacity": 1.0},
+    {"id": "support", "label": "Support technique", "type": "division", "capacity": 1.0}
+  ],
+  "edges": [
+    {"source": "dg", "target": "team1", "type": "hierarchy", "weight": 0.5},
+    {"source": "dg", "target": "team2", "type": "hierarchy", "weight": 0.5},
+    {"source": "dg", "target": "team3", "type": "hierarchy", "weight": 0.5},
+    {"source": "team1", "target": "team2", "type": "collaboration", "weight": 1.0},
+    {"source": "team2", "target": "team3", "type": "collaboration", "weight": 1.0},
+    {"source": "team1", "target": "team3", "type": "collaboration", "weight": 1.0},
+    {"source": "support", "target": "team1", "type": "functional", "weight": 0.7},
+    {"source": "support", "target": "team2", "type": "functional", "weight": 0.7},
+    {"source": "support", "target": "team3", "type": "functional", "weight": 0.7}
+  ],
+  "signature": {
+    "depth": 1.5,
+    "span": 3.0,
+    "density": 0.9,
+    "modularity": 0.15,
+    "supervisor_ratio": 0.1
+  }
+}

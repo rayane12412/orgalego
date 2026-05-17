@@ -1,0 +1,27 @@
+{
+  "id": "meso_equipe_projet",
+  "name": "Équipe projet",
+  "level": "meso",
+  "school": "Mintzberg (configuration par projets)",
+  "description": "Équipe temporaire constituée autour d'un projet, dissoute à la livraison. Coordination par standardisation des résultats.",
+  "nodes": [
+    {"id": "chef", "label": "Chef de projet", "type": "equipe", "capacity": 1.0},
+    {"id": "expert1", "label": "Expert métier", "type": "equipe", "capacity": 1.0},
+    {"id": "expert2", "label": "Expert technique", "type": "equipe", "capacity": 1.0},
+    {"id": "operationnel", "label": "Opérationnels", "type": "equipe", "capacity": 3.0}
+  ],
+  "edges": [
+    {"source": "chef", "target": "expert1", "type": "hierarchy", "weight": 1.0},
+    {"source": "chef", "target": "expert2", "type": "hierarchy", "weight": 1.0},
+    {"source": "chef", "target": "operationnel", "type": "hierarchy", "weight": 1.0},
+    {"source": "expert1", "target": "operationnel", "type": "functional", "weight": 0.8},
+    {"source": "expert2", "target": "operationnel", "type": "functional", "weight": 0.8}
+  ],
+  "signature": {
+    "depth": 2.0,
+    "span": 3.0,
+    "density": 0.55,
+    "modularity": 0.3,
+    "supervisor_ratio": 0.25
+  }
+}

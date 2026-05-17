@@ -1,0 +1,79 @@
+{
+  "macro_nodes": [
+    {"id": "dg", "label": "DG", "level": "macro", "type": "division", "x": 0, "y": 0},
+    {"id": "rd", "label": "R&D", "level": "macro", "type": "division", "x": -200, "y": 150},
+    {"id": "prod", "label": "Produit", "level": "macro", "type": "division", "x": -100, "y": 150},
+    {"id": "com", "label": "Commercial", "level": "macro", "type": "division", "x": 100, "y": 150},
+    {"id": "mkt", "label": "Marketing", "level": "macro", "type": "division", "x": 200, "y": 150},
+    {"id": "ops", "label": "Ops & Finance", "level": "macro", "type": "division", "x": 0, "y": 300}
+  ],
+  "macro_edges": [
+    {"id": "e1", "source": "dg", "target": "rd", "type": "hierarchy", "weight": 1.0, "frequency": 1.0},
+    {"id": "e2", "source": "dg", "target": "prod", "type": "hierarchy", "weight": 1.0, "frequency": 1.0},
+    {"id": "e3", "source": "dg", "target": "com", "type": "hierarchy", "weight": 1.0, "frequency": 1.0},
+    {"id": "e4", "source": "dg", "target": "mkt", "type": "hierarchy", "weight": 1.0, "frequency": 1.0},
+    {"id": "e5", "source": "dg", "target": "ops", "type": "hierarchy", "weight": 1.0, "frequency": 1.0},
+    {"id": "e6", "source": "rd", "target": "prod", "type": "functional", "weight": 0.8, "frequency": 2.0},
+    {"id": "e7", "source": "prod", "target": "com", "type": "functional", "weight": 0.8, "frequency": 2.0},
+    {"id": "e8", "source": "com", "target": "mkt", "type": "functional", "weight": 0.8, "frequency": 2.0},
+    {"id": "e9", "source": "prod", "target": "mkt", "type": "functional", "weight": 0.5, "frequency": 1.5}
+  ],
+  "meso_nodes": [
+    {"id": "arch", "label": "Architectes", "level": "meso", "type": "equipe", "x": 0, "y": 0},
+    {"id": "back", "label": "Backend", "level": "meso", "type": "equipe", "x": -150, "y": 100},
+    {"id": "front", "label": "Frontend", "level": "meso", "type": "equipe", "x": 150, "y": 100},
+    {"id": "data", "label": "Data / ML", "level": "meso", "type": "equipe", "x": -200, "y": 250},
+    {"id": "devops", "label": "DevOps", "level": "meso", "type": "equipe", "x": 200, "y": 250},
+    {"id": "qa", "label": "QA transverse", "level": "meso", "type": "equipe", "x": 300, "y": 0}
+  ],
+  "meso_edges": [
+    {"id": "me1", "source": "arch", "target": "back", "type": "functional", "weight": 1.0, "frequency": 3.0},
+    {"id": "me2", "source": "arch", "target": "front", "type": "functional", "weight": 1.0, "frequency": 3.0},
+    {"id": "me3", "source": "arch", "target": "data", "type": "functional", "weight": 1.0, "frequency": 2.0},
+    {"id": "me4", "source": "arch", "target": "devops", "type": "functional", "weight": 1.0, "frequency": 2.0},
+    {"id": "me5", "source": "back", "target": "front", "type": "collaboration", "weight": 0.8, "frequency": 2.5},
+    {"id": "me6", "source": "back", "target": "data", "type": "collaboration", "weight": 0.7, "frequency": 2.0},
+    {"id": "me7", "source": "back", "target": "devops", "type": "collaboration", "weight": 0.7, "frequency": 2.0},
+    {"id": "me8", "source": "front", "target": "devops", "type": "collaboration", "weight": 0.6, "frequency": 1.5},
+    {"id": "me9", "source": "qa", "target": "back", "type": "functional", "weight": 1.0, "frequency": 2.5},
+    {"id": "me10", "source": "qa", "target": "front", "type": "functional", "weight": 1.0, "frequency": 2.5},
+    {"id": "me11", "source": "qa", "target": "data", "type": "functional", "weight": 1.0, "frequency": 2.0}
+  ],
+  "micro_nodes": [
+    {"id": "tl_marie", "label": "Marie (TL)", "level": "micro", "type": "manager", "x": 0, "y": 0},
+    {"id": "d1_karim", "label": "Karim", "level": "micro", "type": "expert", "x": -200, "y": 150},
+    {"id": "d2_sophie", "label": "Sophie", "level": "micro", "type": "expert", "x": -100, "y": 200},
+    {"id": "d3_tom", "label": "Tom", "level": "micro", "type": "expert", "x": 100, "y": 200},
+    {"id": "d4_lea", "label": "Léa", "level": "micro", "type": "expert", "x": 200, "y": 150},
+    {"id": "d5_alex", "label": "Alex", "level": "micro", "type": "expert", "x": 350, "y": 0, "workload": 0.9}
+  ],
+  "micro_edges": [
+    {"id": "ie1", "source": "tl_marie", "target": "d1_karim", "type": "hierarchy", "weight": 1.0, "frequency": 1.5},
+    {"id": "ie2", "source": "tl_marie", "target": "d2_sophie", "type": "hierarchy", "weight": 1.0, "frequency": 1.5},
+    {"id": "ie3", "source": "tl_marie", "target": "d3_tom", "type": "hierarchy", "weight": 1.0, "frequency": 1.5},
+    {"id": "ie4", "source": "tl_marie", "target": "d4_lea", "type": "hierarchy", "weight": 1.0, "frequency": 1.5},
+    {"id": "ie5", "source": "tl_marie", "target": "d5_alex", "type": "hierarchy", "weight": 1.0, "frequency": 1.0},
+    {"id": "ie6", "source": "d1_karim", "target": "d2_sophie", "type": "collaboration", "weight": 0.8, "frequency": 3.0},
+    {"id": "ie7", "source": "d2_sophie", "target": "d3_tom", "type": "collaboration", "weight": 0.8, "frequency": 3.0},
+    {"id": "ie8", "source": "d3_tom", "target": "d4_lea", "type": "collaboration", "weight": 0.8, "frequency": 3.0},
+    {"id": "ie9", "source": "d1_karim", "target": "d4_lea", "type": "collaboration", "weight": 0.6, "frequency": 2.0},
+    {"id": "ie10", "source": "d5_alex", "target": "d1_karim", "type": "informal", "weight": 1.0, "frequency": 4.0},
+    {"id": "ie11", "source": "d5_alex", "target": "d3_tom", "type": "informal", "weight": 1.0, "frequency": 4.0}
+  ],
+  "memberships_macro_meso": [
+    {"id": "mm1", "child": "arch", "parent": "rd", "weight": 1.0, "is_primary": true},
+    {"id": "mm2", "child": "back", "parent": "rd", "weight": 1.0, "is_primary": true},
+    {"id": "mm3", "child": "front", "parent": "rd", "weight": 1.0, "is_primary": true},
+    {"id": "mm4", "child": "data", "parent": "rd", "weight": 1.0, "is_primary": true},
+    {"id": "mm5", "child": "devops", "parent": "rd", "weight": 1.0, "is_primary": true},
+    {"id": "mm6", "child": "qa", "parent": "rd", "weight": 0.7, "is_primary": false}
+  ],
+  "memberships_meso_micro": [
+    {"id": "mim1", "child": "tl_marie", "parent": "back", "weight": 1.0, "is_primary": true},
+    {"id": "mim2", "child": "d1_karim", "parent": "back", "weight": 1.0, "is_primary": true},
+    {"id": "mim3", "child": "d2_sophie", "parent": "back", "weight": 1.0, "is_primary": true},
+    {"id": "mim4", "child": "d3_tom", "parent": "back", "weight": 1.0, "is_primary": true},
+    {"id": "mim5", "child": "d4_lea", "parent": "back", "weight": 1.0, "is_primary": true},
+    {"id": "mim6", "child": "d5_alex", "parent": "back", "weight": 1.0, "is_primary": true}
+  ]
+}

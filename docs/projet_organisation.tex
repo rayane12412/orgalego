@@ -1,0 +1,786 @@
+\documentclass[11pt,a4paper]{article}
+
+% ============== PACKAGES ==============
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{lmodern}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{positioning, arrows.meta, shapes.geometric, fit, backgrounds, calc, decorations.pathmorphing}
+\usepackage{amsmath, amssymb}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{tcolorbox}
+\usepackage{booktabs}
+\usepackage{caption}
+
+\lstdefinestyle{treestyle}{
+    backgroundcolor=\color{codebg},
+    basicstyle=\ttfamily\scriptsize,
+    showstringspaces=false,
+    breaklines=false,
+    frame=single,
+    framerule=0pt,
+    columns=fullflexible,
+    keepspaces=true,
+    upquote=true,
+    aboveskip=0.6em,
+    belowskip=0.6em
+}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!60!black,
+    urlcolor=blue!60!black,
+    citecolor=blue!60!black
+}
+
+% ============== STYLES DE CODE ==============
+\definecolor{codebg}{rgb}{0.97,0.97,0.97}
+\definecolor{codekw}{rgb}{0.13,0.29,0.53}
+\definecolor{codestr}{rgb}{0.4,0.6,0.2}
+\definecolor{codecom}{rgb}{0.5,0.5,0.5}
+
+\lstdefinestyle{pystyle}{
+    backgroundcolor=\color{codebg},
+    basicstyle=\ttfamily\footnotesize,
+    keywordstyle=\color{codekw}\bfseries,
+    stringstyle=\color{codestr},
+    commentstyle=\color{codecom}\itshape,
+    showstringspaces=false,
+    breaklines=true,
+    frame=single,
+    framerule=0pt,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    numbersep=8pt,
+    language=Python,
+    captionpos=b
+}
+
+% Definition manuelle du langage JavaScript pour listings
+\lstdefinelanguage{JavaScriptCustom}{
+  keywords={typeof, new, true, false, catch, function, return, null, switch, var, let, const, if, in, while, do, else, case, break, import, export, from, default, async, await, class, extends, this, of, for, try, throw, instanceof, super, static, useState, useEffect, useRef, useMemo, useCallback},
+  ndkeywords={String, Array, Object, Math, JSON, console, window, document, Promise, WebSocket, JSON.parse, JSON.stringify},
+  keywordstyle=\color{codekw}\bfseries,
+  ndkeywordstyle=\color{codekw}\bfseries,
+  identifierstyle=\color{black},
+  sensitive=true,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{codecom}\itshape,
+  stringstyle=\color{codestr},
+  morestring=[b]',
+  morestring=[b]"
+}
+
+\lstdefinestyle{jsstyle}{
+    backgroundcolor=\color{codebg},
+    basicstyle=\ttfamily\footnotesize,
+    keywordstyle=\color{codekw}\bfseries,
+    stringstyle=\color{codestr},
+    commentstyle=\color{codecom}\itshape,
+    showstringspaces=false,
+    breaklines=true,
+    frame=single,
+    framerule=0pt,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    numbersep=8pt,
+    language=JavaScriptCustom,
+    captionpos=b
+}
+
+% ============== STYLES TIKZ ==============
+\tikzset{
+    division/.style={
+        rectangle, rounded corners=4pt, draw=blue!60!black, thick,
+        fill=blue!10, minimum width=2.2cm, minimum height=0.9cm,
+        font=\small\bfseries, align=center
+    },
+    equipe/.style={
+        rectangle, rounded corners=3pt, draw=teal!70!black, thick,
+        fill=teal!15, minimum width=1.9cm, minimum height=0.8cm,
+        font=\footnotesize, align=center
+    },
+    personne/.style={
+        circle, draw=orange!70!black, thick, fill=orange!20,
+        minimum size=0.9cm, font=\scriptsize, align=center
+    },
+    hierarchie/.style={-{Latex[length=2mm]}, thick, blue!60!black},
+    flux/.style={-{Latex[length=2mm]}, thick, teal!70!black, dashed},
+    collab/.style={thick, orange!70!black},
+    informel/.style={thick, orange!70!black, dashed},
+    membership/.style={-{Latex[length=1.5mm]}, gray!60, very thin},
+}
+
+\newtcolorbox{problembox}{
+    colback=red!5,
+    colframe=red!60!black,
+    arc=2mm,
+    boxrule=0.8pt,
+    left=4mm, right=4mm, top=2mm, bottom=2mm
+}
+
+\newtcolorbox{solutionbox}{
+    colback=green!5,
+    colframe=green!50!black,
+    arc=2mm,
+    boxrule=0.8pt,
+    left=4mm, right=4mm, top=2mm, bottom=2mm
+}
+
+\newtcolorbox{infobox}{
+    colback=blue!5,
+    colframe=blue!50!black,
+    arc=2mm,
+    boxrule=0.8pt,
+    left=4mm, right=4mm, top=2mm, bottom=2mm
+}
+
+% ============== MÉTADONNÉES ==============
+\title{\Huge \textbf{OrgaLego} \\[0.3cm]
+\Large Un simulateur 2D pour la conception et le diagnostic\\ de structures organisationnelles\\[0.3cm]
+\large Spécification technique et fonctionnelle du projet}
+\author{Document de conception}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+\noindent \textbf{OrgaLego} est un simulateur 2D interactif permettant de concevoir et diagnostiquer des structures organisationnelles à partir d'une bibliothèque de blocs préfabriqués issus des grandes écoles de pensée (Mintzberg, Fayol, Weber, etc.). L'organisation est modélisée comme un graphe hiérarchique à trois niveaux (macro, méso, micro), affichés successivement par navigation : l'utilisateur clique sur un nœud pour descendre dans la structure et explorer le niveau correspondant. Le diagnostic s'appuie sur trois algorithmes de théorie des graphes : détection de communautés (Louvain), centralité d'intermédiarité, et matching d'archétypes théoriques. L'architecture combine un \textit{backend} Python (NetworkX, FastAPI) et un \textit{frontend} en React communiquant par WebSocket.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+% =====================================================
+\section{Problématique : pourquoi cet outil doit exister}
+% =====================================================
+
+\subsection{Le coût caché des restructurations}
+
+La restructuration d'une entreprise est l'une des opérations les plus coûteuses et risquées qu'elle puisse entreprendre. Trois ordres de coûts s'y cumulent : \textbf{financiers} (honoraires de conseil souvent supérieurs à plusieurs centaines de milliers d'euros), \textbf{humains} (perte de productivité de 6 à 18 mois, démotivation, départs, perte de savoir-faire informel) et \textbf{d'opportunité} (mobilisation du management au détriment du business). Conséquence : les restructurations sont rares (typiquement tous les 5 à 10 ans), créant un paradoxe --- la décision la plus structurante pour la performance est aussi celle pour laquelle les dirigeants ont la moins d'expérience.
+
+\subsection{La densité du corpus théorique}
+
+Le second obstacle est cognitif. La théorie des organisations s'est construite sur plus d'un siècle et compte une douzaine d'écoles, chacune avec ses concepts, auteurs et prescriptions :
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{p{4cm} p{3cm} p{7cm}}
+\toprule
+\textbf{École} & \textbf{Auteurs} & \textbf{Apport principal} \\
+\midrule
+Organisation scientifique du travail & Taylor & Division verticale et horizontale du travail, standardisation \\
+Administrative & Fayol & Principes de direction, unité de commandement, span of control \\
+Bureaucratique & Weber & Formalisation des règles, hiérarchie rationnelle-légale \\
+Relations humaines & Mayo, Maslow & Importance des facteurs psycho-sociaux, motivation \\
+Sociotechnique & Trist, Emery & Couplage entre système technique et système social \\
+Contingence & Lawrence \& Lorsch & Pas de modèle unique : la structure dépend de l'environnement \\
+Configurationnelle & Mintzberg & 5 à 7 configurations types (structure simple, bureaucratie mécaniste, professionnelle, divisionnelle, adhocratie, etc.) \\
+Analyse stratégique & Crozier, Friedberg & Jeux de pouvoir et zones d'incertitude \\
+\bottomrule
+\end{tabular}
+\caption{Aperçu des principales écoles de pensée organisationnelle}
+\end{table}
+
+\begin{problembox}
+\textbf{Constat opérationnel :} aucun dirigeant ou consultant ne peut tenir simultanément en tête la totalité de ce corpus pour l'appliquer de manière cohérente. Les décisions sont prises sur quelques principes intuitivement maîtrisés, au risque de produire des structures théoriquement incohérentes (par exemple un bloc bureaucratique wébérien greffé sur une adhocratie de Mintzberg, sans mécanisme de coordination compatible).
+\end{problembox}
+
+\subsection{Les limites des outils existants}
+
+Des outils d'\textit{Organizational Design Software} existent (OrgVue, Nakisa, Ingentis, Polinode, OrgWeaver) mais présentent trois limites :
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Data-driven, pas theory-driven} : ils analysent les données HR (Slack/Teams, reporting) sans s'appuyer explicitement sur les écoles théoriques.
+    \item \textbf{Orientés grandes entreprises} : tarification supérieure à 30k EUR/an, intégrations Workday/SAP requises, inaccessibles aux PME et à l'enseignement.
+    \item \textbf{Pédagogie limitée} : organigrammes plats sans représentation explicite des niveaux d'abstraction (division / équipe / individu) ni des archétypes théoriques associés.
+\end{enumerate}
+
+\subsection{Le positionnement d'OrgaLego}
+
+\begin{solutionbox}
+\textbf{Proposition de valeur :} OrgaLego est un simulateur 2D interactif qui permet aux étudiants, formateurs, consultants juniors et dirigeants de PME d'\textbf{apprendre} et de \textbf{tester} les théories d'organisation en assemblant des structures comme des Lego, et en observant en temps réel leurs forces et faiblesses. L'utilisateur navigue par clic entre les trois niveaux d'abstraction (division $\to$ équipe $\to$ individu). L'outil rend opérationnel un corpus théorique aujourd'hui réservé aux experts.
+\end{solutionbox}
+
+% =====================================================
+\section{Modélisation conceptuelle : graphes hiérarchiques à trois niveaux}
+% =====================================================
+
+\subsection{Principe général}
+
+Une organisation est représentée comme un \textbf{graphe hiérarchique multi-niveaux} composé de trois sous-graphes empilés et reliés par des arêtes inter-niveaux dites de \textit{membership}. Cette décomposition est cohérente avec celle de Mintzberg (sommet stratégique, ligne hiérarchique, centre opérationnel) tout en restant manipulable par les algorithmes standards de théorie des graphes.
+
+Formellement :
+\[
+\mathcal{G} = \big(G_1, G_2, G_3, E_{1\to 2}, E_{2\to 3}\big)
+\]
+où $G_1, G_2, G_3$ sont respectivement les graphes \textbf{macro} (divisions, BU), \textbf{méso} (équipes, comités) et \textbf{micro} (individus), et $E_{1\to 2}, E_{2\to 3}$ sont les arêtes de rattachement pondérées (un individu peut appartenir à plusieurs équipes avec un \% de temps alloué).
+
+\subsection{Attributs portés par les nœuds et les arêtes}
+
+Les \textbf{nœuds} portent : identifiant, libellé, type, capacité, coût, performance, charge, compétences. Les \textbf{arêtes intra-niveau} : type (hiérarchique, fonctionnelle, collaboration, informelle), fréquence, latence, criticité. Les \textbf{arêtes inter-niveau} : pondération, nature du rattachement (principal/secondaire, formel/informel).
+
+% =====================================================
+\section{Étude de cas : la société fictive TechNova}
+% =====================================================
+
+Pour illustrer concrètement la modélisation et les algorithmes, nous considérons \textbf{TechNova}, une scale-up européenne du secteur logiciel comptant 150 collaborateurs. L'entreprise rencontre des difficultés de coordination entre la R\&D et le commercial, et envisage une restructuration.
+
+\subsection{Niveau 1 --- Vue macro : architecture organisationnelle}
+
+Le niveau macro représente les grandes divisions de TechNova et les flux structurels entre elles. La figure~\ref{fig:macro} présente l'état initial.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[node distance=1.6cm and 2.4cm]
+    \node[division] (dg) {DG};
+    \node[division, below left=of dg, xshift=-2cm] (rd) {R\&D};
+    \node[division, below left=of dg, xshift=1cm] (prod) {Produit};
+    \node[division, below right=of dg, xshift=-1cm] (com) {Commercial};
+    \node[division, below right=of dg, xshift=2cm] (mkt) {Marketing};
+    \node[division, below=2.6cm of dg] (ops) {Ops \& Finance};
+
+    % Hiérarchie
+    \draw[hierarchie] (dg) -- (rd);
+    \draw[hierarchie] (dg) -- (prod);
+    \draw[hierarchie] (dg) -- (com);
+    \draw[hierarchie] (dg) -- (mkt);
+    \draw[hierarchie] (dg) -- (ops);
+
+    % Flux fonctionnels
+    \draw[flux] (rd) -- (prod);
+    \draw[flux] (prod) -- (com);
+    \draw[flux] (com) -- (mkt);
+    \draw[flux] (prod) -- (mkt);
+
+    % Légende
+    \node[anchor=west] at (4.5,0) {\footnotesize \textcolor{blue!60!black}{$\longrightarrow$} Hiérarchie};
+    \node[anchor=west] at (4.5,-0.6) {\footnotesize \textcolor{teal!70!black}{$\dashrightarrow$} Flux fonctionnel};
+\end{tikzpicture}
+\caption{Graphe macro de TechNova ($G_1$) --- état initial. Structure fonctionnelle classique.}
+\label{fig:macro}
+\end{figure}
+
+\textbf{Diagnostic macro :} structure fonctionnelle pure. L'absence de lien direct R\&D--Commercial est un \emph{anti-pattern} classique : les besoins clients transitent par le Produit, créant un délai de réactivité préjudiciable.
+
+\subsection{Niveau 2 --- Vue méso : équipes au sein de la R\&D}
+
+En "zoomant" sur le nœud R\&D du graphe précédent, on découvre le sous-graphe des équipes qui le compose (figure~\ref{fig:meso}).
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[node distance=1.4cm and 2cm]
+    \node[equipe] (arch) {Architectes};
+    \node[equipe, below left=of arch] (back) {Backend};
+    \node[equipe, below right=of arch] (front) {Frontend};
+    \node[equipe, below=2.2cm of arch, xshift=-2cm] (data) {Data / ML};
+    \node[equipe, below=2.2cm of arch, xshift=2cm] (devops) {DevOps};
+    \node[equipe, right=2.8cm of arch] (qa) {QA transverse};
+
+    \draw[flux] (arch) -- (back);
+    \draw[flux] (arch) -- (front);
+    \draw[flux] (arch) -- (data);
+    \draw[flux] (arch) -- (devops);
+    \draw[flux] (back) -- (front);
+    \draw[flux] (back) -- (data);
+    \draw[flux] (back) -- (devops);
+    \draw[flux] (front) -- (devops);
+    \draw[flux] (qa) -- (back);
+    \draw[flux] (qa) -- (front);
+    \draw[flux] (qa) -- (data);
+
+    \begin{pgfonlayer}{background}
+        \node[draw=blue!60!black, dashed, rounded corners, fit=(arch)(back)(front)(data)(devops)(qa),
+              inner sep=0.4cm, label={[font=\small\bfseries\color{blue!60!black}]above:Division R\&D}] {};
+    \end{pgfonlayer}
+\end{tikzpicture}
+\caption{Graphe méso de TechNova ($G_2$) --- zoom sur la division R\&D. L'équipe QA est transverse et intervient dans plusieurs équipes.}
+\label{fig:meso}
+\end{figure}
+
+\textbf{Diagnostic méso :} l'équipe Architectes joue un rôle de coordination centrale. L'équipe QA est un \emph{nœud à forte centralité d'intermédiarité} : son indisponibilité bloquerait simultanément plusieurs équipes.
+
+\subsection{Niveau 3 --- Vue micro : individus au sein d'une équipe}
+
+En zoomant à nouveau sur l'équipe Backend, on découvre les individus et leurs relations de collaboration réelles (figure~\ref{fig:micro}).
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[node distance=1.3cm and 1.8cm]
+    \node[personne, fill=orange!40] (tl) {TL\\Marie};
+    \node[personne, below left=of tl, xshift=-0.5cm] (d1) {D1\\Karim};
+    \node[personne, below=of tl, xshift=-1.5cm] (d2) {D2\\Sophie};
+    \node[personne, below=of tl, xshift=0.5cm] (d3) {D3\\Tom};
+    \node[personne, below right=of tl, xshift=0.5cm] (d4) {D4\\Léa};
+    \node[personne, right=2.2cm of tl, fill=orange!60] (d5) {D5\\Alex};
+
+    % Liens hiérarchiques (formels)
+    \draw[hierarchie] (tl) -- (d1);
+    \draw[hierarchie] (tl) -- (d2);
+    \draw[hierarchie] (tl) -- (d3);
+    \draw[hierarchie] (tl) -- (d4);
+    \draw[hierarchie] (tl) -- (d5);
+
+    % Collaborations réelles (informelles)
+    \draw[informel] (d1) -- (d2);
+    \draw[informel] (d2) -- (d3);
+    \draw[informel] (d3) -- (d4);
+    \draw[informel] (d1) to[bend right=30] (d4);
+    \draw[informel] (d5) -- (d1);
+    \draw[informel] (d5) -- (d3);
+
+    \node[anchor=west, font=\scriptsize] at (4.5,1.5) {TL = Tech Lead};
+    \node[anchor=west, font=\scriptsize] at (4.5,1.0) {D = Développeur};
+    \node[anchor=west, font=\scriptsize] at (4.5,0.5) {\textcolor{orange!70!black}{\textbf{---}} hiérarchie formelle};
+    \node[anchor=west, font=\scriptsize] at (4.5,0.0) {\textcolor{orange!70!black}{\textbf{--\,--}} collaboration réelle};
+    \node[anchor=west, font=\scriptsize, text width=4cm] at (4.5,-0.7) {Couleur foncée = surcharge détectée};
+\end{tikzpicture}
+\caption{Graphe micro de TechNova ($G_3$) --- zoom sur l'équipe Backend. Alex (D5) apparaît surchargé : il est sollicité par plusieurs membres en dehors de la chaîne hiérarchique formelle.}
+\label{fig:micro}
+\end{figure}
+
+\textbf{Diagnostic micro :} Alex est un \emph{leader informel} dont la centralité réelle excède largement son rôle formel --- son départ serait un \textit{single point of failure}. L'écart entre l'organigramme formel (étoile) et le réseau réel (maillage) révèle un fonctionnement par ajustement mutuel proche d'une \textbf{adhocratie}, alors que le reste de la R\&D relève plutôt d'une \textbf{bureaucratie professionnelle} : cette incohérence inter-niveaux est un signal de tension.
+
+\subsection{Vue intégrée : navigation entre niveaux par clic}
+
+La figure~\ref{fig:3d} schématise la structure logique du graphe hiérarchique : les trois niveaux (macro, méso, micro) sont reliés par les arêtes verticales de \textit{membership}. Dans l'application 2D, l'utilisateur ne voit qu'\textbf{un seul niveau à la fois} : un clic sur un nœud du niveau supérieur ouvre la vue du sous-graphe correspondant au niveau inférieur. Un fil d'Ariane permet de remonter.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[scale=0.9]
+    % Plan macro
+    \draw[fill=blue!8, draw=blue!40] (0,4) -- (8,4) -- (10,5) -- (2,5) -- cycle;
+    \node[font=\small\bfseries, blue!60!black] at (-0.5,4.7) {Macro};
+    \node[circle, fill=blue!40, minimum size=4mm] (m1) at (3,4.5) {};
+    \node[circle, fill=blue!40, minimum size=4mm] (m2) at (5,4.5) {};
+    \node[circle, fill=blue!40, minimum size=4mm] (m3) at (7,4.5) {};
+    \draw[blue!60!black, thick] (m1) -- (m2);
+    \draw[blue!60!black, thick] (m2) -- (m3);
+
+    % Plan méso
+    \draw[fill=teal!8, draw=teal!50] (0,2) -- (8,2) -- (10,3) -- (2,3) -- cycle;
+    \node[font=\small\bfseries, teal!70!black] at (-0.5,2.7) {Méso};
+    \node[circle, fill=teal!40, minimum size=3mm] (e1) at (2.5,2.5) {};
+    \node[circle, fill=teal!40, minimum size=3mm] (e2) at (3.8,2.5) {};
+    \node[circle, fill=teal!40, minimum size=3mm] (e3) at (5,2.5) {};
+    \node[circle, fill=teal!40, minimum size=3mm] (e4) at (6.5,2.5) {};
+    \node[circle, fill=teal!40, minimum size=3mm] (e5) at (7.5,2.5) {};
+    \draw[teal!70!black, thick] (e1) -- (e2);
+    \draw[teal!70!black, thick] (e2) -- (e3);
+    \draw[teal!70!black, thick] (e4) -- (e5);
+
+    % Plan micro
+    \draw[fill=orange!8, draw=orange!50] (0,0) -- (8,0) -- (10,1) -- (2,1) -- cycle;
+    \node[font=\small\bfseries, orange!70!black] at (-0.5,0.7) {Micro};
+    \foreach \x in {2.2,2.8,3.4,4.0,4.6,5.2,5.8,6.4,7.0,7.6} {
+        \node[circle, fill=orange!50, minimum size=2mm] at (\x,0.5) {};
+    }
+    \draw[orange!70!black, thick] (2.2,0.5) -- (2.8,0.5);
+    \draw[orange!70!black, thick] (2.8,0.5) -- (3.4,0.5);
+    \draw[orange!70!black, thick] (4.0,0.5) -- (4.6,0.5);
+    \draw[orange!70!black, thick] (5.8,0.5) -- (6.4,0.5);
+    \draw[orange!70!black, thick] (7.0,0.5) -- (7.6,0.5);
+
+    % Membership inter-niveaux
+    \draw[membership] (m1) -- (e1);
+    \draw[membership] (m1) -- (e2);
+    \draw[membership] (m2) -- (e3);
+    \draw[membership] (m3) -- (e4);
+    \draw[membership] (m3) -- (e5);
+    \draw[membership] (e1) -- (2.5,0.5);
+    \draw[membership] (e2) -- (3.7,0.5);
+    \draw[membership] (e3) -- (5.0,0.5);
+    \draw[membership] (e4) -- (6.4,0.5);
+    \draw[membership] (e5) -- (7.3,0.5);
+\end{tikzpicture}
+\caption{Structure logique du graphe hiérarchique à trois niveaux, reliés par les arêtes de \textit{membership} (gris). Dans l'application 2D, chaque plan est affiché séparément, la navigation s'effectue par clic sur les nœuds.}
+\label{fig:3d}
+\end{figure}
+
+% =====================================================
+\section{Algorithmes d'optimisation mis en \oe uvre}
+% =====================================================
+
+OrgaLego s'appuie pour son MVP sur \textbf{trois algorithmes éprouvés} de théorie des graphes, chacun adressant une question organisationnelle précise et complémentaire des deux autres. D'autres algorithmes sont prévus pour les versions ultérieures et sont listés à la fin de cette section.
+
+\subsection{Détection de silos par modularité (algorithme de Louvain)}
+
+\paragraph{Question organisationnelle.} L'organisation est-elle cloisonnée en silos qui freinent la collaboration transverse ?
+
+\paragraph{Principe.} L'algorithme de Louvain partitionne le graphe en communautés en maximisant la \emph{modularité} $Q$, mesure définie par :
+\[
+Q = \frac{1}{2m}\sum_{i,j}\Big[A_{ij} - \frac{k_i k_j}{2m}\Big]\delta(c_i, c_j)
+\]
+où $A_{ij}$ est la matrice d'adjacence (pondérée), $k_i$ le degré du nœud $i$, $m$ la somme des poids des arêtes, et $\delta(c_i, c_j) = 1$ si $i$ et $j$ appartiennent à la même communauté.
+
+\paragraph{Interprétation.} Si la partition algorithmique coïncide avec la partition formelle, l'organisation est \textbf{silotée}. Si Louvain identifie des communautés transverses aux divisions, c'est le signe d'une organisation \emph{de fait} matricielle qu'il peut être pertinent de formaliser.
+
+\paragraph{Cas TechNova.} Louvain sur le graphe macro révèle deux communautés : \{R\&D, Produit\} et \{Commercial, Marketing, Ops\}. Confirme statistiquement le silo R\&D--Business.
+
+\subsection{Détection de goulots par centralité d'intermédiarité}
+
+\paragraph{Question organisationnelle.} Quels nœuds (divisions, équipes, individus) constituent des goulots d'étranglement de l'information ?
+
+\paragraph{Principe.} La centralité d'intermédiarité (\textit{betweenness centrality}) d'un nœud $v$ est définie par :
+\[
+C_B(v) = \sum_{s \neq v \neq t} \frac{\sigma_{st}(v)}{\sigma_{st}}
+\]
+où $\sigma_{st}$ est le nombre de plus courts chemins de $s$ à $t$, et $\sigma_{st}(v)$ le nombre de ces chemins passant par $v$. Un nœud à forte centralité d'intermédiarité est traversé par une grande proportion des flux ; son indisponibilité fragmente l'organisation.
+
+\paragraph{Cas TechNova.} L'équipe \emph{Architectes} obtient une centralité de 0,68, le score le plus élevé du graphe méso. Risque de saturation : tout flux inter-équipes la traverse. Recommandation : redondance fonctionnelle (rôle de liaison secondaire) ou \emph{by-pass} (coordination directe entre certaines équipes).
+
+\subsection{Identification des configurations théoriques (matching d'archétypes)}
+
+\paragraph{Question organisationnelle.} À quelle configuration de Mintzberg (ou autre archétype théorique) l'organisation observée correspond-elle, et avec quels écarts ?
+
+\paragraph{Principe.} Pour chaque archétype de la bibliothèque (structure simple, bureaucratie mécaniste, professionnelle, divisionnelle, adhocratie), on calcule une \emph{signature structurelle} : profondeur hiérarchique, span of control moyen, densité, modularité, ratio d'encadrement. La signature observée est comparée par distance euclidienne pondérée à chaque archétype :
+\[
+d(\mathcal{O}, A_k) = \sqrt{\sum_i w_i (m_i^{\mathcal{O}} - m_i^{A_k})^2}
+\]
+
+L'archétype le plus proche est identifié et les écarts dimension par dimension restitués à l'utilisateur. C'est l'algorithme \textbf{central} qui rend opérationnel le corpus théorique et distingue OrgaLego des outils d'analyse de réseau classiques.
+
+\paragraph{Cas TechNova.} La signature macro se rapproche d'une \emph{bureaucratie professionnelle} (forte spécialisation, hiérarchie modérée, ajustement mutuel). Au niveau Backend, la signature correspond davantage à une \emph{adhocratie}. Cette incohérence inter-niveaux est restituée comme un signal de tension nécessitant arbitrage.
+
+\subsection{Algorithmes prévus pour les versions ultérieures}
+
+Les trois algorithmes ci-dessus constituent le socle MVP. Deux algorithmes complémentaires sont identifiés pour plus tard :
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{PageRank --- leaders informels} (v2). Appliqué au graphe micro de collaboration, révèlerait les acteurs réellement influents indépendamment de la hiérarchie formelle. Reporté car il suppose une qualité de données sur la collaboration informelle que les utilisateurs n'auront pas toujours.
+    \item \textbf{Recuit simulé --- optimisation automatique} (v3). Prendrait une fonction objectif pondérée (efficience, cohésion, conformité) et générerait automatiquement une structure cible optimale. Reporté car il suppose des choix méthodologiques lourds et n'est pas indispensable pour les usages pédagogiques du MVP.
+\end{itemize}
+
+L'architecture modulaire (\texttt{core/algorithms/}) permet d'ajouter ces extensions sans modifier la couche d'orchestration ni les schémas d'API.
+
+% =====================================================
+\section{Architecture technique}
+% =====================================================
+
+\subsection{Vue d'ensemble}
+
+L'application repose sur une architecture client-serveur : la logique métier reste en Python (bibliothèques de référence en théorie des graphes), et le rendu interactif 2D est délégué au navigateur. Les deux couches communiquent par WebSocket pour un retour visuel en temps réel.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[node distance=1.5cm]
+    \node[draw, rounded corners, fill=blue!10, minimum width=4.5cm, minimum height=2.5cm, align=center] (front) {
+        \textbf{Frontend (navigateur)}\\[2pt]
+        \footnotesize React + Cytoscape.js\\
+        \footnotesize (ou React Flow)\\
+        \footnotesize Drag-and-drop des blocs Lego\\
+        \footnotesize Navigation par clic
+    };
+    \node[draw, rounded corners, fill=green!10, minimum width=4.5cm, minimum height=2.5cm, align=center, right=3cm of front] (back) {
+        \textbf{Backend (Python)}\\[2pt]
+        \footnotesize FastAPI + Uvicorn\\
+        \footnotesize NetworkX (algos)\\
+        \footnotesize Pydantic (validation)\\
+        \footnotesize Stockage JSON / SQLite
+    };
+
+    \draw[<->, very thick, blue!60!black] (front) -- node[above, font=\small\bfseries] {WebSocket} node[below, font=\footnotesize] {JSON / msgpack} (back);
+\end{tikzpicture}
+\caption{Architecture générale d'OrgaLego.}
+\label{fig:archi}
+\end{figure}
+
+\subsection{Structure du projet et organisation du code}
+
+Le code est séparé en deux applications indépendantes (\texttt{backend/} en Python et \texttt{frontend/} en React), pouvant être lancées séparément. Le backend peut être développé et testé de manière autonome avant même que le frontend ne soit fonctionnel.
+
+\begin{lstlisting}[style=treestyle]
+orgalego/
+|
+|-- backend/                          # === Application Python ===
+|   |-- app/
+|   |   |-- main.py                   # Point d'entree FastAPI (uvicorn)
+|   |   |-- config.py                 # Settings (DB URL, CORS, env vars)
+|   |   |
+|   |   |-- api/                      # Endpoints exposes au frontend
+|   |   |   |-- routes_blocks.py      # GET /blocks -> catalogue Lego
+|   |   |   |-- routes_projects.py    # CRUD projets utilisateur
+|   |   |   |-- routes_export.py      # POST /export -> PDF/Excel
+|   |   |   `-- websocket_graph.py    # WS /ws/graph -> temps reel
+|   |   |
+|   |   |-- schemas/                  # Validation Pydantic
+|   |   |   |-- block.py              # Schema d'un bloc Lego
+|   |   |   |-- graph.py              # Schema graphe 3 niveaux
+|   |   |   |-- diagnosis.py          # Resultats algos
+|   |   |   `-- project.py            # Projet sauvegarde
+|   |   |
+|   |   |-- core/                     # Logique metier (coeur)
+|   |   |   |-- graph_builder.py      # JSON -> NetworkX
+|   |   |   |-- multilevel.py         # Gestion hierarchie 3 niveaux
+|   |   |   |-- diagnosis.py          # Orchestre tous les algos
+|   |   |   |
+|   |   |   `-- algorithms/
+|   |   |       |-- communities.py    # Louvain (silos) - MVP
+|   |   |       |-- centrality.py     # Betweenness - MVP / PageRank - v2
+|   |   |       |-- archetypes.py     # Matching Mintzberg - MVP
+|   |   |       `-- optimization.py   # Recuit simule - v2
+|   |   |
+|   |   |-- blocks/                   # Bibliotheque Lego (JSON statiques)
+|   |   |   |-- level1_macro/
+|   |   |   |   |-- fonctionnelle.json
+|   |   |   |   |-- divisionnelle.json
+|   |   |   |   |-- matricielle.json
+|   |   |   |   `-- adhocratie.json
+|   |   |   |-- level2_meso/
+|   |   |   |   |-- squad_agile.json
+|   |   |   |   |-- comite_pilotage.json
+|   |   |   |   `-- equipe_projet.json
+|   |   |   `-- level3_micro/
+|   |   |       |-- manager.json
+|   |   |       |-- expert.json
+|   |   |       `-- liaison.json
+|   |   |
+|   |   |-- db/                       # Persistance
+|   |   |   |-- models.py             # Tables SQLAlchemy
+|   |   |   `-- session.py            # Session DB
+|   |   |
+|   |   `-- services/                 # Services applicatifs
+|   |       |-- block_loader.py       # Charge les .json au demarrage
+|   |       `-- export_service.py     # Genere rapports PDF
+|   |
+|   |-- tests/
+|   |   |-- test_algorithms.py
+|   |   |-- test_schemas.py
+|   |   `-- test_api.py
+|   |
+|   |-- requirements.txt
+|   `-- pyproject.toml
+|
+|-- frontend/                         # === Application React (2D) ===
+|   |-- public/
+|   |   `-- index.html
+|   |-- src/
+|   |   |-- main.jsx                  # Point d'entree React
+|   |   |-- App.jsx                   # Composant racine, layout general
+|   |   |
+|   |   |-- components/
+|   |   |   |-- GraphView/            # Affichage du graphe 2D courant
+|   |   |   |   |-- GraphView.jsx     # Conteneur React Flow / Cytoscape
+|   |   |   |   |-- DivisionNode.jsx  # Bloc 2D niveau macro
+|   |   |   |   |-- TeamNode.jsx      # Bloc 2D niveau meso
+|   |   |   |   |-- PersonNode.jsx    # Bloc 2D niveau micro
+|   |   |   |   `-- Edge.jsx          # Arete intra-niveau
+|   |   |   |
+|   |   |   |-- Breadcrumb/           # Fil d'Ariane (navigation par clic)
+|   |   |   |   `-- Breadcrumb.jsx    # macro > R&D > Backend
+|   |   |   |
+|   |   |   |-- BlockPalette/         # Panneau gauche (Lego a glisser)
+|   |   |   |   |-- BlockPalette.jsx
+|   |   |   |   `-- BlockCard.jsx
+|   |   |   |
+|   |   |   |-- DiagnosisPanel/       # Panneau droit (resultats)
+|   |   |   |   |-- DiagnosisPanel.jsx
+|   |   |   |   |-- MetricCard.jsx
+|   |   |   |   `-- RecommendationList.jsx
+|   |   |   |
+|   |   |   `-- Toolbar/              # Barre du haut (save, export)
+|   |   |       `-- Toolbar.jsx
+|   |   |
+|   |   |-- hooks/                    # React hooks reutilisables
+|   |   |   |-- useOrgaLegoSocket.js  # Connexion WebSocket
+|   |   |   |-- useGraphStore.js      # Acces au state global
+|   |   |   |-- useNavigation.js      # Gestion de la descente/remontee
+|   |   |   `-- useBlockLibrary.js    # Charge le catalogue
+|   |   |
+|   |   |-- store/
+|   |   |   |-- graphStore.js         # State global Zustand (graphe)
+|   |   |   `-- navigationStore.js    # State du chemin (macro/meso/micro)
+|   |   |
+|   |   |-- services/
+|   |   |   |-- api.js                # Client REST (fetch wrappe)
+|   |   |   `-- websocket.js          # Client WebSocket
+|   |   |
+|   |   `-- utils/
+|   |       |-- layout2d.js           # Positions 2D des noeuds
+|   |       `-- colors.js             # Metrique -> couleur
+|   |
+|   |-- package.json
+|   `-- vite.config.js
+|
+|-- shared/                           # Exemples partages
+|   `-- examples/
+|       |-- block_example.json
+|       `-- graph_technova.json       # Le cas TechNova du document
+|
+|-- docs/
+|   |-- architecture.md
+|   |-- projet_organisation.tex
+|   `-- projet_organisation.pdf
+|
+|-- docker-compose.yml                # Lance back + front ensemble
+|-- README.md
+`-- .gitignore
+\end{lstlisting}
+
+\paragraph{Principes de cette organisation.}
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Séparation stricte backend/frontend} : communication uniquement via l'API typée définie dans \texttt{schemas/}.
+    \item \textbf{Bibliothèque Lego externalisée} : \texttt{blocks/} ne contient que des JSON statiques --- enrichissable sans toucher au code.
+    \item \textbf{Algorithmes isolés et testables} : chaque algorithme expose des fonctions pures testables indépendamment.
+    \item \textbf{Persistance optionnelle} : \texttt{db/} n'est requis que pour la sauvegarde de projets. L'application fonctionne sans BDD en mode démo.
+\end{enumerate}
+
+\subsection{Backend Python : bibliothèques et rôle de chacune}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{p{3.2cm} p{3cm} p{8cm}}
+\toprule
+\textbf{Bibliothèque} & \textbf{Catégorie} & \textbf{Rôle dans le projet} \\
+\midrule
+\texttt{NetworkX} & Graphes & Bibliothèque principale : représentation des graphes, algorithmes (centralités, plus courts chemins, partitionnement). \\
+\texttt{python-louvain} & Communautés & Implémentation de référence de l'algorithme de Louvain pour la détection de silos. \\
+\texttt{numpy / scipy} & Calcul scientifique & Algèbre linéaire (matrices d'adjacence, calculs spectraux), optimisation numérique (prévu pour v2). \\
+\texttt{FastAPI} & API web & Framework asynchrone pour exposer les fonctions Python en API REST et WebSocket. \\
+\texttt{uvicorn} & Serveur ASGI & Serveur de production pour FastAPI. \\
+\texttt{Pydantic} & Validation & Schémas typés pour valider les blocs Lego, les structures soumises, les requêtes. \\
+\texttt{SQLAlchemy} & ORM & Persistance des projets utilisateurs (SQLite en local, PostgreSQL en SaaS). \\
+\texttt{pandas} & Données & Import/export Excel et CSV pour les utilisateurs qui partent d'un organigramme existant. \\
+\texttt{matplotlib} & Visualisation & Génération d'exports PDF des diagnostics (rapports). \\
+\bottomrule
+\end{tabular}
+\caption{Stack Python d'OrgaLego.}
+\end{table}
+
+\paragraph{Rôle des modules clés.}
+
+\begin{itemize}[leftmargin=*]
+    \item \texttt{api/} : porte d'entrée. Reçoit les requêtes HTTP/WebSocket, valide avec Pydantic, délègue à \texttt{core/}.
+    \item \texttt{schemas/} : « grammaire » partagée avec le frontend (bloc, graphe, diagnostic). Garantit que les deux côtés parlent la même langue.
+    \item \texttt{core/graph\_builder.py} : convertit le JSON envoyé par le frontend en objet NetworkX manipulable.
+    \item \texttt{core/algorithms/} : un fichier par algorithme. Fonctions pures testables.
+    \item \texttt{core/diagnosis.py} : orchestrateur. Appelle Louvain, betweenness et matching d'archétypes, agrège les résultats. Modulaire pour accueillir PageRank et recuit simulé (v2).
+    \item \texttt{blocks/*.json} : bibliothèque Lego, externalisée pour pouvoir l'enrichir sans toucher au code.
+\end{itemize}
+
+\subsection{Frontend : choix techniques}
+
+Le frontend utilise \textbf{React} comme base, avec une bibliothèque dédiée au rendu de graphes interactifs en 2D :
+\begin{itemize}[leftmargin=*]
+    \item \textbf{React Flow} ou \textbf{Cytoscape.js} : bibliothèques 2D pour afficher des nœuds et arêtes interactifs (drag-and-drop, sélection, zoom, mise en page automatique).
+    \item \textbf{Zustand} : gestionnaire d'état global léger qui maintient l'état du graphe en cours d'édition et déclenche les envois WebSocket.
+\end{itemize}
+
+L'utilisateur navigue entre les trois niveaux du graphe hiérarchique par \textbf{clic} : un clic sur un nœud du niveau supérieur ouvre la vue du sous-graphe associé au niveau inférieur. Un fil d'Ariane en haut de l'écran permet de remonter à tout moment.
+
+\begin{infobox}
+\textbf{Méthodologie de développement du frontend.} L'intégralité du code React sera développée avec l'assistance d'un grand modèle de langage (LLM) :
+\begin{itemize}[leftmargin=*]
+    \item L'effort intellectuel principal porte sur la \textbf{modélisation organisationnelle} et les \textbf{algorithmes}, écrits manuellement en Python.
+    \item Le code frontend (composants, glisser-déposer, hooks WebSocket) relève de patterns bien couverts par les LLM modernes.
+    \item Cette répartition concentre le temps sur la partie scientifique tout en livrant rapidement une interface fonctionnelle.
+\end{itemize}
+Les schémas Pydantic du backend servent de contrat d'interface stable pour guider la génération du code par le LLM.
+\end{infobox}
+
+\subsection{Communication backend $\leftrightarrow$ frontend}
+
+Le canal retenu est le \textbf{WebSocket}, choisi pour sa bidirectionnalité (le serveur peut pousser des mises à jour), sa faible latence (idéal pour le retour temps réel) et sa persistance de connexion (état de session maintenu côté serveur).
+
+\paragraph{Protocole applicatif.} Messages JSON typés par Pydantic, trois catégories :
+
+\begin{itemize}[leftmargin=*]
+    \item \texttt{graph\_update} : delta de modification envoyé par le frontend.
+    \item \texttt{diagnosis\_result} : métriques et recommandations renvoyées par le backend.
+    \item \texttt{optimization\_request} / \texttt{optimization\_progress} : prévus pour v2/v3 (recuit simulé).
+\end{itemize}
+
+\paragraph{Flux de données.} La figure~\ref{fig:flux} retrace le cycle complet d'une interaction utilisateur : du clic ou du glisser-déposer jusqu'à la mise à jour visuelle reflétant le diagnostic recalculé.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[
+    node distance=0.45cm,
+    box/.style={rectangle, draw, rounded corners=3pt, minimum width=11cm, minimum height=0.85cm, align=center, font=\small},
+    boxtight/.style={rectangle, draw, rounded corners=3pt, minimum width=11cm, minimum height=1.5cm, align=center, font=\small},
+    algobox/.style={rectangle, draw, rounded corners=2pt, fill=white, minimum width=1.9cm, minimum height=0.55cm, align=center, font=\scriptsize},
+    down/.style={-{Latex[length=2.2mm]}, thick, blue!60!black},
+    up/.style={-{Latex[length=2.2mm]}, thick, green!50!black, dashed}
+]
+    \node[box, fill=gray!15] (user) {\textbf{Utilisateur} (navigateur)};
+    \node[box, fill=orange!15, below=of user] (front) {\textbf{Composants React} \quad BlockPalette.jsx \;\textbar\; GraphView.jsx \;\textbar\; Breadcrumb.jsx \;\textbar\; DiagnosisPanel.jsx};
+    \node[box, fill=yellow!20, below=of front] (store) {\textbf{State global} \quad store/graphStore.js (Zustand)};
+    \node[below=0.25cm of store, font=\footnotesize\bfseries\itshape, color=red!50!black] (boundary) {- - - - - - - - - - - - - FRONTIÈRE RÉSEAU (WebSocket) - - - - - - - - - - - - -};
+    \node[box, fill=green!15, below=0.25cm of boundary] (ws) {\textbf{Endpoint WebSocket} \quad api/websocket\_graph.py (FastAPI)};
+    \node[box, fill=teal!12, below=of ws] (builder) {\textbf{Construction du graphe} \quad core/graph\_builder.py \;+\; schemas/diagnosis.py};
+    \node[boxtight, fill=teal!18, below=of builder] (orch) {};
+    \node[anchor=north, font=\small\bfseries] at ($(orch.north)+(0,-0.12)$) {core/diagnosis.py (orchestrateur)};
+    \node[algobox, anchor=south] at ($(orch.south)+(-2.6,0.15)$) {Louvain};
+    \node[algobox, anchor=south] at ($(orch.south)+(0,0.15)$) {Betweenness};
+    \node[algobox, anchor=south] at ($(orch.south)+(2.6,0.15)$) {Archétypes};
+
+    % Fleches descendantes (action utilisateur)
+    \draw[down] ([xshift=-2.5cm]user.south) -- ([xshift=-2.5cm]front.north);
+    \draw[down] ([xshift=-2.5cm]front.south) -- ([xshift=-2.5cm]store.north);
+    \draw[down] ([xshift=-2.5cm]store.south) -- ([xshift=-2.5cm]ws.north);
+    \draw[down] ([xshift=-2.5cm]ws.south) -- ([xshift=-2.5cm]builder.north);
+    \draw[down] ([xshift=-2.5cm]builder.south) -- ([xshift=-2.5cm]orch.north);
+
+    % Fleches montantes (resultats)
+    \draw[up] ([xshift=2.5cm]orch.north) -- ([xshift=2.5cm]builder.south);
+    \draw[up] ([xshift=2.5cm]builder.north) -- ([xshift=2.5cm]ws.south);
+    \draw[up] ([xshift=2.5cm]ws.north) -- ([xshift=2.5cm]store.south);
+    \draw[up] ([xshift=2.5cm]store.north) -- ([xshift=2.5cm]front.south);
+    \draw[up] ([xshift=2.5cm]front.north) -- ([xshift=2.5cm]user.south);
+
+    % Labels
+    \node[font=\scriptsize\bfseries, blue!60!black, anchor=east] at ([xshift=-2.6cm, yshift=0]$(user)!0.5!(front)$) {action};
+    \node[font=\scriptsize\bfseries, green!50!black, anchor=west] at ([xshift=2.6cm, yshift=0]$(front)!0.5!(user)$) {rendu};
+\end{tikzpicture}
+\caption{Flux de données entre frontend et backend lors d'une interaction utilisateur. Les flèches bleues (descendantes) acheminent une modification du graphe depuis le navigateur jusqu'aux algorithmes ; les flèches vertes pointillées (montantes) ramènent les résultats du diagnostic pour mise à jour de l'interface 2D. L'ensemble du cycle se déroule typiquement en moins de 100~ms, donnant l'impression d'un calcul en temps réel.}
+\label{fig:flux}
+\end{figure}
+
+\paragraph{Synthèse en une phrase.} Le frontend décrit \emph{l'état visuel} du graphe, le backend décrit \emph{ce que cet état signifie} (métriques, diagnostics, recommandations), et le WebSocket les fait dialoguer en quasi temps réel.
+
+% =====================================================
+\section{Synthèse du scénario TechNova}
+% =====================================================
+
+Pour boucler l'illustration, voici comment OrgaLego accompagne TechNova de son diagnostic à sa restructuration optimisée.
+
+\begin{infobox}
+\textbf{Étape 1 --- Modélisation initiale.} L'utilisateur importe l'organigramme existant ou le reconstruit en assemblant des blocs de la bibliothèque. La structure macro (figure~\ref{fig:macro}) est identifiée comme \emph{fonctionnelle pure}.
+
+\textbf{Étape 2 --- Diagnostic automatique.} L'application calcule en temps réel les trois métriques fondamentales du MVP : modularité de Louvain (silo R\&D/Business confirmé), centralités d'intermédiarité (équipe Architectes saturée), et distance aux archétypes (bureaucratie professionnelle au niveau R\&D, incohérente avec l'adhocratie observée au niveau Backend).
+
+\textbf{Étape 3 --- Hypothèses de réorganisation.} L'utilisateur teste plusieurs configurations en glissant-déposant des blocs : (a) ajout d'un rôle de \emph{Product Manager} de liaison entre R\&D et Commercial ; (b) bascule en structure matricielle ; (c) création de \emph{squads} pluridisciplinaires. Pour chaque hypothèse, les trois algorithmes sont recalculés et restituent leur diagnostic instantanément.
+
+\textbf{Étape 4 --- Arbitrage et restitution.} L'utilisateur compare les configurations testées sur les indicateurs clés (modularité, centralité maximale, distance à l'archétype cible) et retient celle qui réalise le meilleur compromis selon ses priorités. Un rapport PDF est généré, comparant la structure initiale et la structure cible sur l'ensemble des métriques, avec justification théorique des choix.
+\end{infobox}
+
+% =====================================================
+\section{Conclusion et perspectives}
+% =====================================================
+
+OrgaLego propose une approche \emph{theory-driven} et \emph{learning-oriented} de la conception organisationnelle, complémentaire des outils enterprise existants centrés sur la donnée HR. La modélisation en graphe hiérarchique à trois niveaux est mathématiquement tractable, pédagogiquement lisible, et ouverte à l'enrichissement progressif.
+
+\paragraph{Périmètre du MVP.} La première version livrée sera entièrement \textbf{en 2D} avec navigation par clic entre les trois niveaux, une bibliothèque initiale de 6 à 8 blocs Lego couvrant les configurations de Mintzberg, et les trois algorithmes essentiels (Louvain, centralité d'intermédiarité, matching d'archétypes). Ce périmètre est suffisant pour produire un diagnostic organisationnel complet et défendable, et pour valider l'outil auprès de premiers utilisateurs étudiants ou formateurs.
+
+\paragraph{Si le temps le permet : extensions prévues.} Une fois le MVP 2D stabilisé et validé, deux extensions sont envisagées dans l'ordre suivant :
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Algorithmes d'optimisation supplémentaires} : implémentation de PageRank pour identifier les leaders informels au niveau micro, puis du recuit simulé pour générer automatiquement des structures cibles optimisées selon une fonction objectif pondérée (efficience, cohésion, conformité à un archétype).
+    \item \textbf{Passage en 3D} : ajout d'une vue tridimensionnelle alternative dans laquelle les trois niveaux apparaissent simultanément, empilés et reliés par les arêtes verticales de \textit{membership} (cf. figure~\ref{fig:3d}). L'utilisateur pourra alors basculer entre la vue 2D par niveau (mode d'édition principal) et la vue 3D synthétique (mode d'exploration). Cette étape s'appuiera sur React Three Fiber, Three.js et \texttt{@react-three/drei}.
+\end{enumerate}
+
+L'architecture du projet (séparation backend/frontend, schémas Pydantic comme contrat d'interface, fichier dédié par algorithme) est conçue pour absorber ces évolutions sans réécriture profonde.
+
+\end{document}

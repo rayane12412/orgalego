@@ -1,0 +1,29 @@
+{
+  "id": "macro_fonctionnelle",
+  "name": "Structure fonctionnelle",
+  "level": "macro",
+  "school": "Fayol / Mintzberg",
+  "description": "Découpage par grandes fonctions de l'entreprise (RH, Finance, R&D, Commercial...). Bonne efficience, faible coordination transverse.",
+  "nodes": [
+    {"id": "dg", "label": "Direction Générale", "type": "division", "capacity": 1.0},
+    {"id": "rd", "label": "R&D", "type": "division", "capacity": 1.0},
+    {"id": "prod", "label": "Production", "type": "division", "capacity": 1.0},
+    {"id": "com", "label": "Commercial", "type": "division", "capacity": 1.0},
+    {"id": "fin", "label": "Finance", "type": "division", "capacity": 1.0},
+    {"id": "rh", "label": "RH", "type": "division", "capacity": 1.0}
+  ],
+  "edges": [
+    {"source": "dg", "target": "rd", "type": "hierarchy", "weight": 1.0},
+    {"source": "dg", "target": "prod", "type": "hierarchy", "weight": 1.0},
+    {"source": "dg", "target": "com", "type": "hierarchy", "weight": 1.0},
+    {"source": "dg", "target": "fin", "type": "hierarchy", "weight": 1.0},
+    {"source": "dg", "target": "rh", "type": "hierarchy", "weight": 1.0}
+  ],
+  "signature": {
+    "depth": 2.0,
+    "span": 5.0,
+    "density": 0.33,
+    "modularity": 0.6,
+    "supervisor_ratio": 0.17
+  }
+}

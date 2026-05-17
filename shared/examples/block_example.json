@@ -1,0 +1,21 @@
+{
+  "id": "example_block",
+  "name": "Exemple minimal",
+  "level": "macro",
+  "school": "Exemple",
+  "description": "Bloc d'exemple pour les tests et la documentation.",
+  "nodes": [
+    {"id": "a", "label": "A", "type": "division"},
+    {"id": "b", "label": "B", "type": "division"}
+  ],
+  "edges": [
+    {"source": "a", "target": "b", "type": "hierarchy", "weight": 1.0}
+  ],
+  "signature": {
+    "depth": 1.0,
+    "span": 1.0,
+    "density": 1.0,
+    "modularity": 0.0,
+    "supervisor_ratio": 0.5
+  }
+}

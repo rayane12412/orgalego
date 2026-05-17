@@ -1,0 +1,30 @@
+{
+  "id": "meso_comite_pilotage",
+  "name": "Comité de pilotage",
+  "level": "meso",
+  "school": "Fayol / Mintzberg",
+  "description": "Instance de coordination transverse réunissant des représentants de plusieurs équipes. Forte densité de communication, décisions concertées.",
+  "nodes": [
+    {"id": "president", "label": "Président", "type": "equipe", "capacity": 1.0},
+    {"id": "membre1", "label": "Représentant A", "type": "equipe", "capacity": 0.3},
+    {"id": "membre2", "label": "Représentant B", "type": "equipe", "capacity": 0.3},
+    {"id": "membre3", "label": "Représentant C", "type": "equipe", "capacity": 0.3},
+    {"id": "secretaire", "label": "Secrétaire", "type": "equipe", "capacity": 0.5}
+  ],
+  "edges": [
+    {"source": "president", "target": "membre1", "type": "hierarchy", "weight": 1.0},
+    {"source": "president", "target": "membre2", "type": "hierarchy", "weight": 1.0},
+    {"source": "president", "target": "membre3", "type": "hierarchy", "weight": 1.0},
+    {"source": "president", "target": "secretaire", "type": "hierarchy", "weight": 1.0},
+    {"source": "membre1", "target": "membre2", "type": "collaboration", "weight": 0.7},
+    {"source": "membre2", "target": "membre3", "type": "collaboration", "weight": 0.7},
+    {"source": "membre1", "target": "membre3", "type": "collaboration", "weight": 0.7}
+  ],
+  "signature": {
+    "depth": 2.0,
+    "span": 4.0,
+    "density": 0.7,
+    "modularity": 0.2,
+    "supervisor_ratio": 0.2
+  }
+}

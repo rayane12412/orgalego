@@ -1,0 +1,18 @@
+{
+  "id": "micro_liaison",
+  "name": "Rôle de liaison",
+  "level": "micro",
+  "school": "Mintzberg (mécanismes de coordination)",
+  "description": "Rôle individuel transverse dont la fonction principale est de faire le pont entre plusieurs équipes ou unités. Réduit les goulots d'étranglement.",
+  "nodes": [
+    {"id": "liaison", "label": "Liaison", "type": "liaison", "capacity": 1.0, "cost": 1.3}
+  ],
+  "edges": [],
+  "signature": {
+    "depth": 0.0,
+    "span": 0.0,
+    "density": 0.0,
+    "modularity": 0.0,
+    "supervisor_ratio": 0.0
+  }
+}
