@@ -1,8 +1,10 @@
 // Client REST minimaliste vers le backend FastAPI
 // Les chemins sont proxifiés vers http://localhost:8000 par Vite (cf. vite.config.js)
 
+const API_URL = import.meta.env.VITE_API_URL || ""
+
 async function request(path, options = {}) {
-  const res = await fetch(path, {
+  const res = await fetch(`${API_URL}${path}`, {
     headers: { 'Content-Type': 'application/json' },
     ...options,
   })
@@ -46,7 +48,7 @@ export function deleteProject(id) {
 // ---------- Export ----------
 
 export async function exportPdf(graphUpdate) {
-  const res = await fetch('/export/pdf', {
+  const res = await fetch(`${API_URL}/export/pdf`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(graphUpdate),
