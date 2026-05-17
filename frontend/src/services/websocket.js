@@ -1,6 +1,6 @@
 // Wrapper WebSocket avec reconnexion automatique simple
 
-const WS_URL = `ws://${window.location.hostname}:8000/ws/graph`
+const WS_URL = import.meta.env.VITE_WS_URL || `ws://${window.location.hostname}:8000/ws/graph`
 
 export class OrgaLegoSocket {
   constructor() {
